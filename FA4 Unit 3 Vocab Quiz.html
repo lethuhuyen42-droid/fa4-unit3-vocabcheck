@@ -1,0 +1,625 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Word Picture Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one centered 720px column. Soft-pastel neo-brutalist look: thick outlines, hard offset shadows, pill buttons, graph-paper ground. A sticky bar keeps the student's name in view. */
+  :root {
+    /* surfaces and text */
+    --bg: #DCE1FF;
+    --grid: #CAD2F8;
+    --ink: #2A2540;
+    --muted: #5C577A;
+    --surface: #FFFFFF;
+    --field: #FFFFFF;
+    --track: #FFFFFF;
+    --ol: #2A2540;
+    --edge: #2A2540;
+    --p-start: #FFF1BE;
+    --p-quiz: #FFFDF7;
+    --p-res: #CFF0E0;
+    /* pastel fills, the same in both themes, always paired with --on-pastel text */
+    --lime: #DDF5A5;
+    --butter: #FFE9A0;
+    --peach: #FFC9AE;
+    --pink: #FFC4DD;
+    --mint: #BDEBD5;
+    --sky: #BFE0FF;
+    --lav: #CBC6FF;
+    --on-pastel: #2A2540;
+    /* controls */
+    --btn-bg: #2A2540;
+    --btn-fg: #FFF8E8;
+    --btn-shadow: #FF9EC8;
+    --fill: #9D98F7;
+    --ringc: #6C65E8;
+    --bad: #B3362F;
+    --f-display: 'Baloo 2', 'Quicksand', system-ui, sans-serif;
+    --f-body: 'Quicksand', 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --f-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1D1A33;
+      --grid: #282448;
+      --ink: #F1EEFF;
+      --muted: #B7B2DA;
+      --surface: #2F2A5C;
+      --field: #1D1A33;
+      --track: #1D1A33;
+      --ol: #0B0919;
+      --edge: #0B0919;
+      --p-start: #3C3570;
+      --p-quiz: #2B2754;
+      --p-res: #24474A;
+      --btn-bg: #F4F0FF;
+      --btn-fg: #1B1830;
+      --fill: #A9A4FF;
+      --ringc: #B3AEFF;
+      --bad: #FF9A98;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1D1A33;
+    --grid: #282448;
+    --ink: #F1EEFF;
+    --muted: #B7B2DA;
+    --surface: #2F2A5C;
+    --field: #1D1A33;
+    --track: #1D1A33;
+    --ol: #0B0919;
+    --edge: #0B0919;
+    --p-start: #3C3570;
+    --p-quiz: #2B2754;
+    --p-res: #24474A;
+    --btn-bg: #F4F0FF;
+    --btn-fg: #1B1830;
+    --fill: #A9A4FF;
+    --ringc: #B3AEFF;
+    --bad: #FF9A98;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 36px 36px;
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.6;
+    padding-inline: 16px;
+    padding-block: 0 56px;
+    min-height: 100%;
+  }
+  .page { max-width: 720px; margin-inline: auto; }
+  h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.1; font-weight: 800; }
+  p { margin: 0; }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--fill); outline-offset: 3px; }
+
+  /* Pills used as labels */
+  .eyebrow {
+    display: inline-block; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 3px 12px; border: 2.5px solid var(--ol); border-radius: 999px;
+    background: var(--lime); color: var(--on-pastel); line-height: 1.5;
+  }
+
+  /* Identity bar */
+  .bar {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    margin-block: 14px 26px;
+    background: var(--surface);
+    border: 3px solid var(--ol);
+    border-radius: 22px;
+    box-shadow: 5px 5px 0 var(--edge);
+  }
+  .bar-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; min-height: 54px; }
+  .brand { font-family: var(--f-display); font-weight: 800; font-size: 1.3rem; line-height: 1; white-space: nowrap; padding-top: 4px; }
+  .brand span { background: var(--lav); color: var(--on-pastel); padding: 2px 10px; border-radius: 10px; border: 2.5px solid var(--ol); margin-left: 4px; }
+  .who { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .who small { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; white-space: nowrap; }
+  .who b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; padding: 3px 14px; border-radius: 999px; background: var(--lime); color: var(--on-pastel); border: 2.5px solid var(--ol); }
+  .prog { height: 14px; margin: 0 16px 12px; background: var(--track); border: 2.5px solid var(--ol); border-radius: 999px; overflow: hidden; }
+  .prog-fill { height: 100%; width: 0; background: var(--fill); border-right: 2.5px solid var(--ol); border-radius: 999px; transition: width 0.35s ease; }
+  .prog-fill[style*="width: 0%"] { border-right-width: 0; }
+
+  /* Panels */
+  .panel {
+    position: relative;
+    background: var(--p-quiz);
+    border: 3px solid var(--ol);
+    border-radius: 28px;
+    box-shadow: 8px 8px 0 var(--edge);
+    padding: clamp(22px, 5vw, 38px);
+  }
+  .panel > *:not(.deco) { position: relative; z-index: 1; }
+  .deco { position: absolute; inset: 0; overflow: hidden; border-radius: 25px; pointer-events: none; }
+  .deco span { position: absolute; display: block; border-radius: 50%; }
+  .deco .c { border: 3px solid var(--ol); }
+
+  /* Buttons */
+  .btn {
+    appearance: none; cursor: pointer; font-weight: 700; font-size: 1rem;
+    padding: 12px 28px; border-radius: 999px;
+    background: var(--btn-bg); color: var(--btn-fg);
+    border: 2.5px solid var(--ol);
+    box-shadow: 4px 4px 0 var(--btn-shadow);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--btn-shadow); }
+  .btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--btn-shadow); }
+  .btn.ghost { background: var(--surface); color: var(--ink); box-shadow: 4px 4px 0 var(--edge); }
+  .btn.ghost:hover { box-shadow: 5px 5px 0 var(--edge); }
+  .btn.ghost:active { box-shadow: 1px 1px 0 var(--edge); }
+
+  /* Start */
+  #start { background: var(--p-start); }
+  #start h1 { font-size: clamp(2.3rem, 8vw, 3.6rem); margin-block: 14px 14px; max-width: 9em; }
+  #start h1 em { font-style: normal; background: var(--pink); color: var(--on-pastel); padding: 0 12px; border-radius: 14px; border: 3px solid var(--ol); white-space: nowrap; }
+  .lead { color: var(--muted); max-width: 50ch; font-weight: 600; }
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-block: 28px; padding: 0; list-style: none; }
+  .facts li { border: 2.5px solid var(--ol); border-radius: 18px; padding: 10px 14px 8px; box-shadow: 3px 3px 0 var(--edge); color: var(--on-pastel); }
+  .facts li:nth-child(1) { background: var(--mint); }
+  .facts li:nth-child(2) { background: var(--pink); }
+  .facts li:nth-child(3) { background: var(--sky); }
+  .facts b { display: block; font-family: var(--f-display); font-size: 1.7rem; line-height: 1.1; font-weight: 800; }
+  .facts span { font-size: 0.85rem; font-weight: 700; }
+  .field label { display: block; font-weight: 700; margin-bottom: 8px; }
+  .field input {
+    width: 100%; padding: 12px 18px; border-radius: 999px; border: 3px solid var(--ol);
+    background: var(--field); font-size: 1.05rem; font-weight: 600;
+  }
+  .field input::placeholder { color: var(--muted); opacity: 0.8; }
+  .field input:focus { outline: none; box-shadow: 4px 4px 0 var(--lav); }
+  .err { color: var(--bad); font-size: 0.9rem; font-weight: 700; min-height: 1.4em; margin-top: 8px; }
+  .start-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px 16px; }
+  .start-row .field { flex: 1 1 260px; min-width: 0; }
+
+  /* Quiz */
+  .qmeta { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .qmeta .num { font-family: var(--f-display); font-weight: 800; font-size: 1.15rem; padding: 2px 16px; border: 2.5px solid var(--ol); border-radius: 999px; background: var(--sky); color: var(--on-pastel); line-height: 1.5; }
+  .qmeta .tally { font-weight: 700; font-size: 0.9rem; padding: 3px 14px; border: 2.5px solid var(--ol); border-radius: 999px; background: var(--mint); color: var(--on-pastel); }
+  .sentence { font-size: clamp(1.25rem, 3.9vw, 1.65rem); font-weight: 600; line-height: 2.1; margin-block: 16px 20px; overflow-wrap: anywhere; }
+  .blank {
+    display: inline-block; max-width: 100%; text-align: center; padding: 0 8px; margin-inline: 4px;
+    border: 3px solid var(--ol); border-radius: 12px; background: var(--butter); color: var(--on-pastel);
+    font-weight: 700; line-height: 1.55; box-shadow: 3px 3px 0 var(--edge);
+  }
+  .blank:focus { outline: none; background: #FFFFFF; box-shadow: 3px 3px 0 var(--fill); }
+  .blank.ok { background: var(--mint); }
+  .blank.no { background: var(--pink); }
+  .hint { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding-top: 16px; border-top: 3px dashed var(--ol); color: var(--muted); font-size: 0.97rem; font-weight: 600; }
+  .hint .eyebrow { background: var(--peach); }
+  .feedback { margin-top: 20px; padding: 14px 18px; border-radius: 20px; font-size: 0.98rem; border: 3px solid var(--ol); color: var(--on-pastel); box-shadow: 4px 4px 0 var(--edge); }
+  .feedback.ok { background: var(--mint); }
+  .feedback.no { background: var(--pink); }
+  .feedback .head { font-family: var(--f-display); font-weight: 800; font-size: 1.2rem; line-height: 1.3; }
+  .mono { font-family: var(--f-mono); font-size: 0.88em; font-weight: 500; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 24px; }
+  .actions .note { color: var(--muted); font-size: 0.88rem; }
+
+  /* Result */
+  #result .panel { background: var(--p-res); }
+  .score-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 26px; align-items: center; }
+  .ring { position: relative; width: 160px; height: 160px; background: var(--surface); border: 3px solid var(--ol); border-radius: 50%; box-shadow: 4px 4px 0 var(--edge); }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .track { stroke: var(--track); }
+  .ring .val { stroke: var(--ringc); transition: stroke-dashoffset 0.9s ease; }
+  .ring .mid { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .ring .mid b { font-family: var(--f-display); font-size: 2.8rem; line-height: 1; font-weight: 800; }
+  .ring .mid span { font-size: 0.75rem; color: var(--muted); font-weight: 700; }
+  .score-text h2 { font-size: clamp(1.8rem, 6vw, 2.5rem); margin-block: 10px 6px; }
+  .score-text p { color: var(--muted); }
+  .score-text p b { color: var(--ink); }
+  #resName { background: var(--sky); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: top; }
+  .result-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+  .review-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; margin-block: 40px 18px; }
+  .review-head h2 { font-size: 1.6rem; background: var(--butter); color: var(--on-pastel); border: 3px solid var(--ol); border-radius: 18px; padding: 4px 18px 0; box-shadow: 4px 4px 0 var(--edge); }
+  .review-head .eyebrow { background: var(--pink); }
+  .review-list { display: grid; gap: 18px; padding: 0; margin: 0; list-style: none; }
+  .rv { background: var(--surface); border: 3px solid var(--ol); border-radius: 24px; box-shadow: 6px 6px 0 var(--edge); padding: 20px clamp(18px, 4vw, 28px); }
+  .rv .eyebrow { background: var(--peach); margin-bottom: 8px; }
+  .rv .q { font-size: 1.1rem; line-height: 1.9; margin-bottom: 14px; overflow-wrap: anywhere; }
+  .rv .q .gap { display: inline-block; min-width: 4.5em; border-bottom: 3px solid var(--ink); margin-inline: 4px; }
+  .rv dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 14px; margin: 0; align-items: center; }
+  .rv dt { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 700; }
+  .rv dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+  .rv dd span { display: inline-block; padding: 1px 14px; border: 2.5px solid var(--ol); border-radius: 999px; color: var(--on-pastel); }
+  .rv dd.mine span { background: var(--pink); text-decoration: line-through; text-decoration-thickness: 2px; }
+  .rv dd.mine.empty span { text-decoration: none; font-style: italic; font-weight: 600; }
+  .rv dd.right span { background: var(--mint); }
+  .rv .meaning { margin-top: 14px; padding-top: 12px; border-top: 3px dashed var(--ol); color: var(--muted); font-size: 0.93rem; }
+  .all-right { background: var(--mint); color: var(--on-pastel); border: 3px solid var(--ol); border-radius: 24px; box-shadow: 6px 6px 0 var(--edge); padding: 20px 24px; }
+
+  @media (max-width: 520px) {
+    .score-top { grid-template-columns: 1fr; justify-items: start; }
+    .facts { gap: 10px; }
+    .facts li { padding: 8px 10px 6px; }
+    .facts b { font-size: 1.35rem; }
+    .who small { display: none; }
+    .panel { box-shadow: 6px 6px 0 var(--edge); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .prog-fill, .ring .val, .btn { transition: none; }
+  }
+</style>
+
+<div class="page">
+  <header class="bar">
+    <div class="bar-in">
+      <div class="brand">Vocab<span>Fill-in</span></div>
+      <div class="who" id="who" hidden><small>Student</small><b id="whoName"></b></div>
+    </div>
+    <div class="prog" id="prog" hidden><div class="prog-fill" id="progFill"></div></div>
+  </header>
+
+  <main>
+    <!-- Start screen -->
+    <section id="start" class="panel">
+      <div class="deco" aria-hidden="true">
+        <span class="c" style="top:-52px; right:-40px; width:170px; height:170px; background:var(--peach)"></span>
+        <span style="top:92px; right:92px; width:34px; height:34px; border:5px solid var(--fill); border-radius:50%"></span>
+        <span class="c" style="top:34px; right:158px; width:16px; height:16px; background:var(--pink)"></span>
+        <span class="c" style="bottom:-50px; right:36px; width:110px; height:110px; background:var(--sky)"></span>
+        <span class="c" style="bottom:44px; right:150px; width:14px; height:14px; background:var(--mint)"></span>
+      </div>
+      <span class="eyebrow">Picture vocabulary</span>
+      <h1>Fill in the <em>blank</em></h1>
+      <p class="lead">Read each sentence and type the missing English word. Every question gives you the Vietnamese meaning and the part of speech as a hint. At the end you get a score out of 10 and a review of your mistakes.</p>
+      <ul class="facts">
+        <li><b>31</b><span>questions</span></li>
+        <li><b>/10</b><span>score scale</span></li>
+        <li><b>Review</b><span>of wrong answers</span></li>
+      </ul>
+      <form id="startForm" novalidate>
+        <div class="start-row">
+          <div class="field">
+            <label for="nameInput">Full name</label>
+            <input id="nameInput" type="text" maxlength="60" autocomplete="name" placeholder="Example: Nguyen Van An">
+            <div class="err" id="nameErr" role="alert"></div>
+          </div>
+          <button class="btn" type="submit" style="margin-top: 32px">Start</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz" class="panel" hidden>
+      <div class="deco" aria-hidden="true">
+        <span class="c" style="bottom:-48px; right:-22px; width:96px; height:96px; background:var(--lav)"></span>
+        <span class="c" style="bottom:16px; right:84px; width:14px; height:14px; background:var(--pink)"></span>
+      </div>
+      <div class="qmeta">
+        <div class="num">Question <span id="qNow">1</span> / <span id="qTotal">31</span></div>
+        <div class="tally">Correct: <span id="qRight">0</span></div>
+      </div>
+      <span class="eyebrow">Type the missing word</span>
+      <form id="qForm" novalidate>
+        <p class="sentence" id="sentence"></p>
+        <div class="hint" id="hint"></div>
+        <div class="feedback" id="feedback" hidden role="status" aria-live="polite"></div>
+        <div class="actions">
+          <button class="btn" type="submit" id="qBtn">Check</button>
+          <span class="note" id="qNote">Press Enter to check</span>
+        </div>
+      </form>
+    </section>
+
+    <!-- Result -->
+    <section id="result" hidden>
+      <div class="panel">
+        <div class="deco" aria-hidden="true">
+          <span class="c" style="bottom:-50px; right:-24px; width:110px; height:110px; background:var(--pink)"></span>
+          <span class="c" style="bottom:22px; right:96px; width:16px; height:16px; background:var(--butter)"></span>
+          <span style="top:-18px; right:48px; width:44px; height:44px; border:5px solid var(--fill); border-radius:50%"></span>
+        </div>
+        <div class="score-top">
+          <div class="ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="track" cx="60" cy="60" r="50" fill="none" stroke-width="12"></circle>
+              <circle class="val" id="ringVal" cx="60" cy="60" r="50" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+            </svg>
+            <div class="mid"><b id="score10">0</b><span>/ 10 points</span></div>
+          </div>
+          <div class="score-text">
+            <span class="eyebrow" id="resName"></span>
+            <h2 id="resTitle"></h2>
+            <p>Correct answers: <b id="resCount"></b></p>
+            <p id="resNote"></p>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn" type="button" id="againBtn">Play again</button>
+          <button class="btn ghost" type="button" id="renameBtn">Change name</button>
+        </div>
+      </div>
+
+      <div class="review-head">
+        <h2>Review your mistakes</h2>
+        <span class="eyebrow" id="reviewCount"></span>
+      </div>
+      <ol class="review-list" id="reviewList"></ol>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var QUESTIONS = [
+    { s: "A ___ is a tall pink bird that often stands on one leg in shallow water.", ans: ["flamingo"], pos: "n", ipa: "/fləˈmɪŋɡəʊ/", vi: "chim hồng hạc" },
+    { s: "It is freezing outside, so wear a warm ___ around your neck.", ans: ["scarf"], pos: "n", ipa: "/skɑːf/", vi: "khăn quàng cổ" },
+    { s: "My ___ hurt after walking all day, so I took off my shoes.", ans: ["feet"], pos: "n", ipa: "/fiːt/", vi: "đôi chân" },
+    { s: "I will call you tonight, so keep your ___ nearby.", ans: ["phone"], pos: "n", ipa: "/fəʊn/", vi: "điện thoại" },
+    { s: "My brother's son is my ___.", ans: ["nephew"], pos: "n", ipa: "/ˈnefjuː/", vi: "cháu trai" },
+    { s: "The English ___ has 26 letters, from A to Z.", ans: ["alphabet"], pos: "n", ipa: "/ˈælfəbet/", vi: "bảng chữ cái" },
+    { s: "Scientists found the bones of a huge ___ that lived millions of years ago.", ans: ["dinosaur"], pos: "n", ipa: "/ˈdaɪnəsɔː/", vi: "khủng long" },
+    { s: "We saw ancient coins and old paintings at the history ___.", ans: ["museum"], pos: "n", ipa: "/mjuˈziːəm/", vi: "bảo tàng" },
+    { s: "He built a ___ of a plane from plastic parts and glue.", ans: ["model"], pos: "n", ipa: "/ˈmɒdl/", vi: "mô hình" },
+    { s: "The human ___ is made of more than 200 bones.", ans: ["skeleton"], pos: "n", ipa: "/ˈskelɪtn/", vi: "khung xương" },
+    { s: "That horror film was so ___ that I could not sleep all night.", ans: ["scary"], pos: "adj", ipa: "/ˈskeəri/", vi: "đáng sợ" },
+    { s: "When she saw the big spider, she began to ___ loudly.", ans: ["scream"], pos: "v", ipa: "/skriːm/", vi: "hét" },
+    { s: "A lion can ___ so loudly that people hear it from far away.", ans: ["roar"], pos: "v", ipa: "/rɔː/", vi: "gầm" },
+    { s: "The vet was surprised that the little bird was still ___ after the storm.", ans: ["alive"], pos: "adj", ipa: "/əˈlaɪv/", vi: "sống" },
+    { s: "The flowers in the vase are ___ because nobody gave them water.", ans: ["dead"], pos: "adj", ipa: "/ded/", vi: "chết" },
+    { s: "In the factory, a ___ does the dangerous work instead of people.", ans: ["robot"], pos: "n", ipa: "/ˈrəʊbɒt/", vi: "người máy" },
+    { s: "We live on planet ___, the third planet from the Sun.", ans: ["earth"], show: "Earth", pos: "n", ipa: "/ɜːθ/", vi: "trái đất" },
+    { s: "___ of people watched the football match on TV last night.", ans: ["millions"], show: "Millions", pos: "n", ipa: "/ˈmɪljənz/", vi: "hàng triệu" },
+    { s: "A ___ works in a laboratory and does experiments to learn new things.", ans: ["scientist"], pos: "n", ipa: "/ˈsaɪəntɪst/", vi: "nhà khoa học" },
+    { s: "What ___ of music do you like best: pop, rock or jazz?", ans: ["type"], pos: "n", ipa: "/taɪp/", vi: "loại" },
+    { s: "The zebra has a black and white stripe ___ on its body.", ans: ["pattern"], pos: "n", ipa: "/ˈpætn/", vi: "mô hình, kiểu (hoa văn)" },
+    { s: "Put on sunscreen to protect your ___ from the strong sun.", ans: ["skin"], pos: "n", ipa: "/skɪn/", vi: "da" },
+    { s: "A big ___ from space hit the Moon and made a huge hole.", ans: ["asteroid"], pos: "n", ipa: "/ˈæstərɔɪd/", vi: "thiên thạch" },
+    { s: "Yesterday the girl slipped on the ice and ___ over.", ans: ["fell"], pos: "v", ipa: "/fel/", vi: "rơi vào, ngã (quá khứ của fall)" },
+    { s: "My grandfather is ___ young. He is seventy years old now.", ans: ["no longer"], pos: "phr", ipa: "/nəʊ ˈlɒŋɡə/", vi: "không còn" },
+    { s: "The Eiffel Tower is more than 300 ___ tall.", ans: ["metres", "meters"], show: "metres", pos: "n", ipa: "/ˈmiːtəz/", vi: "mét" },
+    { s: "I ___ my umbrella at school yesterday, so I got wet.", ans: ["left"], pos: "v", ipa: "/left/", vi: "để lại (quá khứ của leave)" },
+    { s: "The magician waved his wand and made the rabbit ___.", ans: ["disappear"], pos: "v", ipa: "/ˌdɪsəˈpɪə/", vi: "biến mất" },
+    { s: "The dog wagged its ___ because it was happy to see me.", ans: ["tail"], pos: "n", ipa: "/teɪl/", vi: "cái đuôi" },
+    { s: "My pencil is only fifteen ___ long.", ans: ["centimeters", "centimetres"], show: "centimeters", pos: "n", ipa: "/ˈsentɪmiːtəz/", vi: "cen-ti-mét" },
+    { s: "The little monkey climbed ___ up the tree to get the banana.", ans: ["high"], pos: "adv", ipa: "/haɪ/", vi: "cao" }
+  ];
+  var POS = { n: "noun", adj: "adjective", v: "verb", phr: "phrase", adv: "adverb" };
+  var CIRC = 314.16;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var studentName = "", order = [], idx = 0, results = [], answered = false, input = null;
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function norm(s) { return String(s).trim().toLowerCase().replace(/\s+/g, " "); }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function showScreen(name) {
+    ["start", "quiz", "result"].forEach(function (id) { $(id).hidden = id !== name; });
+    $("prog").hidden = name !== "quiz";
+    window.scrollTo(0, 0);
+  }
+  function shownAnswer(q) { return q.show || q.ans[0]; }
+  function fmtScore(n) { return String(n).replace(".", ","); }
+
+  /* Start */
+  try { var saved = localStorage.getItem("word-picture-quiz-name"); if (saved) $("nameInput").value = saved; } catch (e) {}
+
+  $("startForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var v = $("nameInput").value.trim().replace(/\s+/g, " ");
+    if (v.length < 2) {
+      $("nameErr").textContent = "Please enter your full name (at least 2 characters) before you start.";
+      $("nameInput").focus();
+      return;
+    }
+    $("nameErr").textContent = "";
+    studentName = v;
+    try { localStorage.setItem("word-picture-quiz-name", v); } catch (e) {}
+    $("whoName").textContent = v;
+    $("who").hidden = false;
+    startGame();
+  });
+
+  function setProgress(done) {
+    var f = $("progFill");
+    f.style.width = (done / order.length * 100) + "%";
+    f.style.borderRightWidth = done === 0 ? "0" : "";
+  }
+
+  function startGame() {
+    order = shuffle(QUESTIONS);
+    idx = 0;
+    results = [];
+    $("qTotal").textContent = order.length;
+    showScreen("quiz");
+    renderQuestion();
+  }
+
+  /* Quiz */
+  function renderQuestion() {
+    var q = order[idx];
+    answered = false;
+    $("qNow").textContent = idx + 1;
+    $("qRight").textContent = results.filter(function (r) { return r.ok; }).length;
+    setProgress(idx);
+
+    var parts = q.s.split("___");
+    var sent = $("sentence");
+    sent.textContent = "";
+    sent.appendChild(document.createTextNode(parts[0]));
+    input = document.createElement("input");
+    input.type = "text";
+    input.id = "answerInput";
+    input.className = "blank";
+    input.setAttribute("autocomplete", "off");
+    input.setAttribute("autocapitalize", "none");
+    input.setAttribute("autocorrect", "off");
+    input.setAttribute("spellcheck", "false");
+    input.setAttribute("aria-label", "Answer for question " + (idx + 1));
+    var longest = Math.max.apply(null, q.ans.map(function (a) { return a.length; }));
+    input.style.width = (Math.max(longest, 7) + 3) + "ch";
+    sent.appendChild(input);
+    sent.appendChild(document.createTextNode(parts[1] || ""));
+
+    var hint = $("hint");
+    hint.textContent = "";
+    hint.appendChild(el("span", "eyebrow", "Hint"));
+    hint.appendChild(el("span", "", q.vi + " (" + POS[q.pos] + ")"));
+
+    var fb = $("feedback");
+    fb.hidden = true;
+    fb.textContent = "";
+    $("qBtn").textContent = "Check";
+    $("qNote").textContent = "Press Enter to check";
+    try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+  }
+
+  $("qForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    if (!answered) { checkAnswer(); } else { nextStep(); }
+  });
+
+  function checkAnswer() {
+    var q = order[idx];
+    var raw = input.value;
+    if (!raw.trim()) {
+      var fb0 = $("feedback");
+      fb0.className = "feedback no";
+      fb0.hidden = false;
+      fb0.textContent = "";
+      fb0.appendChild(el("div", "head", "No answer yet"));
+      fb0.appendChild(el("div", "", "Type a word in the blank, then press Check."));
+      input.focus();
+      return;
+    }
+    var given = norm(raw);
+    var ok = q.ans.some(function (a) { return a === given; });
+    results.push({ q: q, given: raw.trim(), ok: ok });
+    answered = true;
+    input.readOnly = true;
+    input.classList.add(ok ? "ok" : "no");
+
+    var fb = $("feedback");
+    fb.className = "feedback " + (ok ? "ok" : "no");
+    fb.hidden = false;
+    fb.textContent = "";
+    fb.appendChild(el("div", "head", ok ? "Correct" : "Not quite"));
+    if (!ok) {
+      var line = el("div", "");
+      line.appendChild(document.createTextNode("Correct answer: "));
+      line.appendChild(el("b", "", shownAnswer(q)));
+      fb.appendChild(line);
+    }
+    var m = el("div", "");
+    m.appendChild(el("span", "mono", q.ipa));
+    m.appendChild(document.createTextNode("  " + q.vi));
+    fb.appendChild(m);
+
+    $("qRight").textContent = results.filter(function (r) { return r.ok; }).length;
+    setProgress(idx + 1);
+    var last = idx === order.length - 1;
+    $("qBtn").textContent = last ? "See results" : "Next question";
+    $("qNote").textContent = "Press Enter to continue";
+    $("qBtn").focus();
+  }
+
+  function nextStep() {
+    if (idx < order.length - 1) { idx++; renderQuestion(); }
+    else { showResult(); }
+  }
+
+  /* Result */
+  function showResult() {
+    var total = order.length;
+    var right = results.filter(function (r) { return r.ok; }).length;
+    var score10 = Math.round(right / total * 100) / 10;
+    showScreen("result");
+    $("resName").textContent = studentName;
+    $("resCount").textContent = right + "/" + total + " questions";
+    $("score10").textContent = fmtScore(score10);
+
+    var title, note;
+    if (score10 >= 9) { title = "Excellent"; note = "You know these picture words very well."; }
+    else if (score10 >= 8) { title = "Great job"; note = "Just a few words left to strengthen."; }
+    else if (score10 >= 6.5) { title = "Good effort"; note = "Check the mistakes below, then play again to improve."; }
+    else if (score10 >= 5) { title = "Passed"; note = "Go over the words you missed in the review section."; }
+    else { title = "Keep practicing"; note = "Read the review carefully, then play again to remember the words."; }
+    $("resTitle").textContent = title;
+    $("resNote").textContent = note;
+
+    var ring = $("ringVal");
+    ring.style.strokeDashoffset = CIRC;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        ring.style.strokeDashoffset = CIRC * (1 - right / total);
+      });
+    });
+
+    var wrong = [];
+    results.forEach(function (r, i) { if (!r.ok) wrong.push({ n: i + 1, r: r }); });
+    var list = $("reviewList");
+    list.textContent = "";
+    $("reviewCount").textContent = wrong.length ? wrong.length + (wrong.length === 1 ? " mistake to review" : " mistakes to review") : "No mistakes";
+
+    if (!wrong.length) {
+      var li0 = el("li", "all-right");
+      li0.appendChild(el("b", "", "You answered all " + total + " questions correctly. "));
+      li0.appendChild(document.createTextNode("There is nothing to review."));
+      list.appendChild(li0);
+      return;
+    }
+    wrong.forEach(function (w) {
+      var q = w.r.q;
+      var li = el("li", "rv");
+      li.appendChild(el("div", "eyebrow", "Question " + w.n + " / " + total));
+      var qd = el("div", "q");
+      var parts = q.s.split("___");
+      qd.appendChild(document.createTextNode(parts[0]));
+      qd.appendChild(el("span", "gap"));
+      qd.appendChild(document.createTextNode(parts[1] || ""));
+      li.appendChild(qd);
+
+      var dl = el("dl");
+      dl.appendChild(el("dt", "", "Your answer"));
+      var dd1 = el("dd", "mine");
+      dd1.appendChild(el("span", "", w.r.given));
+      dl.appendChild(dd1);
+      dl.appendChild(el("dt", "", "Correct answer"));
+      var dd2 = el("dd", "right");
+      dd2.appendChild(el("span", "", shownAnswer(q)));
+      dl.appendChild(dd2);
+      li.appendChild(dl);
+
+      var m = el("div", "meaning");
+      m.appendChild(el("span", "mono", q.ipa));
+      m.appendChild(document.createTextNode("  " + q.vi));
+      li.appendChild(m);
+      list.appendChild(li);
+    });
+  }
+
+  $("againBtn").addEventListener("click", startGame);
+  $("renameBtn").addEventListener("click", function () {
+    $("who").hidden = true;
+    showScreen("start");
+    $("nameInput").focus();
+  });
+})();
+</script>
+
+</body></html>
